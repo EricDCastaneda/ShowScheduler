@@ -1,0 +1,71 @@
+﻿@model ShowScheduler.Models.Show
+
+@{
+    ViewData["Title"] = "Show Information";
+}
+
+<div>
+    <h1 style="text-align:center">@ViewData["Title"]</h1>
+    <p style="text-align: center">
+        <a asp-action="Edit" asp-route-id="@Model.ID">Edit Show</a> |
+        <a asp-action="Remove" asp-route-id="@Model.ID">Remove Show</a>
+    </p>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ShowName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ShowName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Venue)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Venue)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Bands)
+        </dt>
+        <dd class="col-sm-10">
+            <table class="table">
+                <tr>
+                    <th>Band</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+                @foreach (var item in Model.Bands)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BandName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EndTime)
+                        </td>
+                        <td>
+                            <a asp-controller="Bands" asp-action="Edit" asp-route-id="@item.ID">Edit Band</a> |
+                            <a asp-controller="Bands" asp-action="Remove" asp-route-id="@item.ID">Remove Band</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </dd>
+    </dl>
+</div>
+<p style="text-align: center">
+    <a asp-controller="Bands" asp-action="Add">Add a Band</a>
+</p>
+<p style="text-align: center">    
+    <a asp-action="Index">Back to Shows</a> |
+    <a asp-controller="Bands" asp-action="Index">Back to Bands</a>
+</p>

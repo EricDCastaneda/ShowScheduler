@@ -1,0 +1,88 @@
+﻿@model PaginatedList<ShowScheduler.Models.Band>
+
+@{
+    ViewData["Title"] = "All Bands";
+}
+
+<h1 style="text-align:center">@ViewData["Title"]</h1>
+
+<p style="text-align: center">
+    <a asp-action="Add">Add a Band</a>
+</p>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p style="text-align: center">
+            Find by Band Name:
+            <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-action="Index">Back to All Bands</a>
+        </p>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Band Name 
+            </th>
+            <th>
+                Venue 
+            </th>
+            <th>
+                Date 
+            </th>
+            <th>
+                Start Time 
+            </th>
+            <th>
+                End Time 
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BandName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Show.Venue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Show.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndTime)
+                </td>
+                <td>
+                    <a asp-controller="Shows" asp-action="Info" asp-route-id="@item.ShowID">Show Information</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<p style="text-align: center">
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-primary @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-primary @nextDisabled">
+        Next
+    </a>
+</p>

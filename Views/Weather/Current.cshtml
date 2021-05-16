@@ -1,0 +1,26 @@
+﻿@model ShowScheduler.Models.Weather
+
+@{
+    ViewData["Title"] = "Today's Weather in Dallas";
+}
+
+<h1 style="text-align:center">@ViewData["Title"]</h1>
+
+<table class="table">
+    <tr>
+        <th>Temperature</th>
+        <th>Conditions</th>
+        <th>Winds</th>
+    </tr>
+    <tr>
+        <td>
+            @Model.Temp &#8457; @*Degree symbol*@
+        </td>
+        <td>
+            @Model.Condition
+        </td>
+        <td>
+            @Model.Wind mph
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,88 @@
+﻿@model PaginatedList<ShowScheduler.Models.Show>
+
+@{
+    ViewData["Title"] = "All Shows";
+}
+
+<h1 style="text-align:center">@ViewData["Title"]</h1>
+
+<p style="text-align: center">
+    <a asp-action="Add">Add a Show</a>
+</p>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p style="text-align: center">
+            Find by Show Name:
+            <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-primary" /> |
+            <a asp-action="Index">Back to All Shows</a>
+        </p>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Date 
+            </th>
+            <th>
+                Show Name 
+            </th>
+            <th>
+                Headliner
+            </th>
+            <th>
+                Venue 
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShowName)
+                </td>
+                <td>
+                    @foreach (var headliner in item.Bands)
+                    {
+                        @Html.DisplayFor(modelItem => headliner.BandName)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Venue)
+                </td>
+                <td>
+                    <a asp-action="Info" asp-route-id="@item.ID">More Info</a> |
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Remove" asp-route-id="@item.ID">Remove</a>
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<p style="text-align: center">
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-primary @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-primary @nextDisabled">
+        Next
+    </a>
+</p>

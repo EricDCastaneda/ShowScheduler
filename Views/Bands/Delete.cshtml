@@ -1,0 +1,34 @@
+﻿@model ShowScheduler.Models.Band
+
+<h3 style="text-align:center">Are you sure you want to remove this band?</h3>
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.BandName)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.BandName)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.StartTime)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.StartTime)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.EndTime)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.EndTime)
+            </dd>
+        </dl>
+
+        <form asp-action="Remove">
+            <input type="hidden" asp-for="ID" />
+            <input type="submit" value="Remove" class="btn btn-danger" /> |
+            <a asp-controller="Shows" asp-action="Info" asp-route-id="@Model.ShowID">Back to Show Information</a>
+        </form>
+    </div>
+</div>

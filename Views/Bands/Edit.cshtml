@@ -1,0 +1,44 @@
+﻿@model ShowScheduler.Models.Band
+
+@{
+    ViewData["Title"] = "Edit Band";
+}
+
+<h1 style="text-align:center">@ViewData["Title"]</h1>
+
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="ShowID" />
+            <div class="form-group">
+                <label asp-for="BandName" class="control-label"></label>
+                <input asp-for="BandName" class="form-control" />
+                <span asp-validation-for="BandName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartTime" class="control-label"></label>
+                <input asp-for="StartTime" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndTime" class="control-label"></label>
+                <input asp-for="EndTime" class="form-control" />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <a asp-controller="Shows" asp-action="Info" asp-route-id="@Model.ShowID">Back to Show Information</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
