@@ -1,12 +1,11 @@
-using ShowScheduler.Data;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ShowScheduler.Data;
 using System;
-using ShowScheduler;
 
-namespace ContosoUniversity
+namespace ShowScheduler
 {
     public class Program
     {
