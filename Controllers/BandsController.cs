@@ -91,12 +91,17 @@ namespace ShowScheduler.Models
             if (timeValidationResult == "TimeConflictError")
             {
                 TempData["TimeConflictErrorMessage"] = "The new band's Start Time must occur before the End Time and both times can't be the same.";
-                return RedirectToAction("Create", "Bands");
+                return RedirectToAction("Add", "Bands");
             }
             if (timeValidationResult == "OverlapError")
             {
                 TempData["OverlapErrorMessage"] = "The new band's time slot can't overlap with another band in the show.";
-                return RedirectToAction("Create", "Bands");
+                return RedirectToAction("Add", "Bands");
+            }
+            if (timeValidationResult == "DoubleBookedError")
+            {
+                TempData["DoubleBookedErrorMessage"] = "The new band's scheduled to play a different show on that date and their time slots can't overlap.";
+                return RedirectToAction("Add", "Bands");
             }
             if (timeValidationResult == "Passed" && ModelState.IsValid)
             {
@@ -150,6 +155,11 @@ namespace ShowScheduler.Models
                         TempData["OverlapErrorMessage"] = "The new band's time slot can't overlap with another band in the show.";
                         return RedirectToAction("Edit", "Bands", new { id = band.ID });
                     }
+                    else if (timeValidationResult == "DoubleBookedError")
+                    {
+                        TempData["DoubleBookedErrorMessage"] = "The new band's scheduled to play a different show on that date and their time slots can't overlap.";
+                        return RedirectToAction("Edit", "Bands");
+                    }
                     else
                     {
                         _context.Update(band);
@@ -167,7 +177,7 @@ namespace ShowScheduler.Models
                         throw;
                     }
                 }
-                return RedirectToAction("Details", "Shows", new { id = band.ShowID });
+                return RedirectToAction("Info", "Shows", new { id = band.ShowID });
             }
             return View(band);
         }
@@ -289,6 +299,32 @@ namespace ShowScheduler.Models
                     ((startTimeResult < 0 || startTimeResult > 0) && (endAndStartTimeResult > 0 && (endTimeResult < 0 || endTimeResult == 0))))
                 {
                     validationResult = "OverlapError";
+                    return validationResult;
+                }
+            }
+
+            var bandQuery2 = from b in _context.Band.AsNoTracking() // To hold any other Shows the new Band is scheduled to play on that date
+                             where b.BandName == band.BandName
+                             where b.Show.Date == band.Show.Date
+                             select b;
+
+            // Check if the new Band's time slot overlaps with any of their other Shows and report the error if true.
+            foreach (Band sameBand in bandQuery2)
+            {
+                // To hold the result of the comparison between the new Band's StartTime and all of their StartTimes in any other Shows on that date
+                int startTimeResult = DateTime.Compare(band.StartTime, sameBand.StartTime);
+
+                // To hold the result of the comparison between the new Band's EndTime and all of their EndTimes in any other Shows on that date
+                int endTimeResult = DateTime.Compare(band.EndTime, sameBand.EndTime);
+
+                // To hold the result of the comparison between the new Band's EndTime and all of their StartTimes in any other Shows on that date
+                int endAndStartTimeResult = DateTime.Compare(band.EndTime, sameBand.StartTime);
+
+                // Check all possible overlap conditions 
+                if ((!((startTimeResult < 0 && endTimeResult < 0) || (startTimeResult > 0 && endTimeResult > 0))) ||
+                    ((startTimeResult < 0 || startTimeResult > 0) && (endAndStartTimeResult > 0 && (endTimeResult < 0 || endTimeResult == 0))))
+                {
+                    validationResult = "DoubleBookedError";
                     return validationResult;
                 }
             }

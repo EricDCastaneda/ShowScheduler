@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <header>        
+    <header>
         <div class="bg-img">
             <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-transparent">
-                <div class="container">                    
+                <div class="container">
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
@@ -79,6 +79,17 @@
         <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
             <div class="container">
                 <strong>Please try again!</strong> @TempData["TimeConflictErrorMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    }
+    @if (TempData["DoubleBookedErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+            <div class="container">
+                <strong>Please try again!</strong> @TempData["DoubleBookedErrorMessage"]
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
