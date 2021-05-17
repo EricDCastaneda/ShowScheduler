@@ -87,7 +87,8 @@ namespace ShowScheduler.Models
         public async Task<IActionResult> Create([Bind("ShowID,BandName,StartTime,EndTime")] Band band)
         {
             band = AdjustDate(band);
-            string timeValidationResult = TimeValidation(band);
+
+            string timeValidationResult = TimeValidation(band);            
             if (timeValidationResult == "TimeConflictError")
             {
                 TempData["TimeConflictErrorMessage"] = "The new band's Start Time must occur before the End Time and both times can't be the same.";
@@ -98,12 +99,15 @@ namespace ShowScheduler.Models
                 TempData["OverlapErrorMessage"] = "The new band's time slot can't overlap with another band in the show.";
                 return RedirectToAction("Add", "Bands");
             }
-            if (timeValidationResult == "DoubleBookedError")
+
+            string bandValidationResult = BandValidation(band);
+            if (bandValidationResult == "DoubleBookedError")
             {
                 TempData["DoubleBookedErrorMessage"] = "The new band's scheduled to play a different show on that date and their time slots can't overlap.";
                 return RedirectToAction("Add", "Bands");
             }
-            if (timeValidationResult == "Passed" && ModelState.IsValid)
+
+            if (timeValidationResult == "Passed" && bandValidationResult == "Passed" && ModelState.IsValid)
             {
                 _context.Add(band);
                 await _context.SaveChangesAsync();
@@ -137,7 +141,7 @@ namespace ShowScheduler.Models
             if (id != band.ID)
             {
                 return NotFound();
-            }
+            }            
 
             if (ModelState.IsValid)
             {
@@ -147,20 +151,23 @@ namespace ShowScheduler.Models
                     string timeValidationResult = TimeValidation(band);
                     if (timeValidationResult == "TimeConflictError")
                     {
-                        TempData["TimeConflictErrorMessage"] = "The new band's Start Time must occur before the End Time and both times can't be the same.";
+                        TempData["TimeConflictErrorMessage"] = "This band's Start Time must occur before the End Time and both times can't be the same.";
                         return RedirectToAction("Edit", "Bands", new { id = band.ID });
                     }
-                    else if (timeValidationResult == "OverlapError")
+                    if (timeValidationResult == "OverlapError")
                     {
-                        TempData["OverlapErrorMessage"] = "The new band's time slot can't overlap with another band in the show.";
+                        TempData["OverlapErrorMessage"] = "This band's time slot can't overlap with another band in the show.";
                         return RedirectToAction("Edit", "Bands", new { id = band.ID });
                     }
-                    else if (timeValidationResult == "DoubleBookedError")
+
+                    string bandValidationResult = BandValidation(band);
+                    if (bandValidationResult == "DoubleBookedError")
                     {
-                        TempData["DoubleBookedErrorMessage"] = "The new band's scheduled to play a different show on that date and their time slots can't overlap.";
+                        TempData["DoubleBookedErrorMessage"] = "This band's scheduled to play a different show on that date and their time slots can't overlap.";
                         return RedirectToAction("Edit", "Bands");
                     }
-                    else
+
+                    if (timeValidationResult == "Passed" && bandValidationResult == "Passed")
                     {
                         _context.Update(band);
                         await _context.SaveChangesAsync();
@@ -217,7 +224,7 @@ namespace ShowScheduler.Models
             return _context.Band.Any(e => e.ID == id);
         }
 
-        // Match a Band with its corresponding Show and insert the Show's date into the Band's StartTime and EndTime.
+        // This method matches a Band with its corresponding Show and inserts the Show's date into the Band's StartTime and EndTime.
         private Band AdjustDate(Band band)
         {
             Show show = _context.Show.First(c => c.ID == band.ShowID); // To hold the matching Show
@@ -246,11 +253,11 @@ namespace ShowScheduler.Models
             dt2 = DateTime.Parse(dateAndEndTimeComparable1);
             dt3 = DateTime.Parse(dateAndEndTimeComparable2);
 
-            int startTimeResult = DateTime.Compare(band.StartTime, dt1); // To hold the result of the comparison between the new Band's StartTime and 9:00pm
-            int endTimeResult1 = DateTime.Compare(band.EndTime, dt2); // To hold the result of the comparison between the new Band's EndTime and 12:00am
-            int endTimeResult2 = DateTime.Compare(band.EndTime, dt3); // To hold the result of the comparison between the new Band's EndTime and 2:00am
+            int startTimeResult = DateTime.Compare(band.StartTime, dt1); // To hold the result of the comparison between the Band's StartTime and 9:00pm
+            int endTimeResult1 = DateTime.Compare(band.EndTime, dt2); // To hold the result of the comparison between the Band's EndTime and 12:00am
+            int endTimeResult2 = DateTime.Compare(band.EndTime, dt3); // To hold the result of the comparison between the Band's EndTime and 2:00am
 
-            // If the new Band starts at 9:00pm or later and ends between 12:00am and 2:00am,
+            // If the Band starts at 9:00pm or later and ends between 12:00am and 2:00am,
             // move the date within the EndTime variable forward by 1 day for accuracy.
             if ((startTimeResult == 0 || startTimeResult > 0) && (endTimeResult1 == 0 || (endTimeResult2 == 0 || endTimeResult2 < 0)))
             {
@@ -259,19 +266,20 @@ namespace ShowScheduler.Models
             return band;
         }
 
-        // Check if a new Band's StartTime and EndTime are in conflict with each other or any other Bands in the Show.
+        // This method checks if a Band's StartTime and EndTime conflict with each other or overlap with any other Bands in the
+        // Show, or any other Shows the new Band is scheduled to play.
         private string TimeValidation(Band band)
         {
-            // To hold the result of the new Band's StartTime and EndTime validation
+            // To hold the result of the Band's StartTime and EndTime validation
             string validationResult;
 
-            // To hold the result of the comparison between the new Band's StartTime and EndTime
+            // To hold the result of the comparison between the Band's StartTime and EndTime
             int timeResult = DateTime.Compare(band.StartTime, band.EndTime);
 
-            // To hold the result of the comparison between the new Band's EndTime and StartTime 
+            // To hold the result of the comparison between the Band's EndTime and StartTime 
             int reverseTimeResult = DateTime.Compare(band.EndTime, band.StartTime);
 
-            // Check if the new Band's StartTime and EndTime are the same or not in the correct order and report the error if true.
+            // Check if the Band's StartTime and EndTime are the same or not in the correct order and report the error if true.
             if (timeResult > 0 || timeResult == 0 || reverseTimeResult < 0)
             {
                 validationResult = "TimeConflictError";
@@ -280,18 +288,19 @@ namespace ShowScheduler.Models
 
             var bandQuery = from b in _context.Band.AsNoTracking() // To hold all the Bands scheduled to play in the corresponding Show
                             where b.ShowID == band.ShowID
+                            where b.BandName != band.BandName
                             select b;
 
-            // Check if the new Band's time slot overlaps with any other Bands in the Show and report the error if true.
+            // Check if the Band's time slot overlaps with any other Bands in the Show and report the error if true.
             foreach (Band currentBand in bandQuery)
             {
-                // To hold the result of the comparison between the new Band's StartTime and other Bands' StartTime in the Show
+                // To hold the result of the comparison between the Band's StartTime and the StartTimes of all other Bands in the Show
                 int startTimeResult = DateTime.Compare(band.StartTime, currentBand.StartTime);
 
-                // To hold the result of the comparison between the new Band's EndTime and other Bands' EndTime in the Show
+                // To hold the result of the comparison between the Band's EndTime and the EndTimes of all other Bands in the Show
                 int endTimeResult = DateTime.Compare(band.EndTime, currentBand.EndTime);
 
-                // To hold the result of the comparison between the new Band's EndTime and other Bands' StartTime in the Show
+                // To hold the result of the comparison between the Band's EndTime and the StartTimes of all other Bands in the Show
                 int endAndStartTimeResult = DateTime.Compare(band.EndTime, currentBand.StartTime);
 
                 // Check all possible overlap conditions 
@@ -301,26 +310,37 @@ namespace ShowScheduler.Models
                     validationResult = "OverlapError";
                     return validationResult;
                 }
-            }
+            }            
 
-            var bandQuery2 = from b in _context.Band.AsNoTracking() // To hold any other Shows the new Band is scheduled to play on that date
-                             where b.BandName == band.BandName
-                             where b.Show.Date == band.Show.Date
+            // Report the passed validation since no errors were identified.
+            validationResult = "Passed";
+            return validationResult;
+        }
+
+        // This method checks if the new Band's time slot overlaps with any of their other scheduled Shows and reports the error if true.
+        private string BandValidation(Band band)
+        {
+            // To hold the result of the Band's StartTime and EndTime validation
+            string validationResult;
+
+            var bandQuery = from b in _context.Band.AsNoTracking() // To hold any other Shows the new Band is scheduled to play
+                             where b.BandName == band.BandName                             
+                             where b.ShowID != band.ShowID
                              select b;
 
-            // Check if the new Band's time slot overlaps with any of their other Shows and report the error if true.
-            foreach (Band sameBand in bandQuery2)
+            // Check if the Band's time slot overlaps with any of their other Shows and report the error if true.
+            foreach (Band sameBand in bandQuery)
             {
-                // To hold the result of the comparison between the new Band's StartTime and all of their StartTimes in any other Shows on that date
+                // To hold the result of the comparison between the Band's StartTime and all of their StartTimes in any other Shows 
                 int startTimeResult = DateTime.Compare(band.StartTime, sameBand.StartTime);
 
-                // To hold the result of the comparison between the new Band's EndTime and all of their EndTimes in any other Shows on that date
+                // To hold the result of the comparison between the Band's EndTime and all of their EndTimes in any other Shows
                 int endTimeResult = DateTime.Compare(band.EndTime, sameBand.EndTime);
 
-                // To hold the result of the comparison between the new Band's EndTime and all of their StartTimes in any other Shows on that date
+                // To hold the result of the comparison between the Band's EndTime and all of their StartTimes in any other Shows
                 int endAndStartTimeResult = DateTime.Compare(band.EndTime, sameBand.StartTime);
 
-                // Check all possible overlap conditions 
+                // Check for Double Booking overlap conditions 
                 if ((!((startTimeResult < 0 && endTimeResult < 0) || (startTimeResult > 0 && endTimeResult > 0))) ||
                     ((startTimeResult < 0 || startTimeResult > 0) && (endAndStartTimeResult > 0 && (endTimeResult < 0 || endTimeResult == 0))))
                 {
