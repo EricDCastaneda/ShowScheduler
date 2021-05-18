@@ -214,9 +214,11 @@ namespace ShowScheduler.Models
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var band = await _context.Band.FindAsync(id);
+            int showId = band.ShowID; // Save ShowID before removing band
             _context.Band.Remove(band);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index", "Shows");
+            TempData["BandRemovalConfirmationMessage"] = "The band was removed successfully.";            
+            return RedirectToAction("Info", "Shows", new { id = showId }); // Go back to the Show Information page
         }
 
         private bool BandExists(int id)

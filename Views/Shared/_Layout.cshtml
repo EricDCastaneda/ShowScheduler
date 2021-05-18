@@ -96,6 +96,28 @@
             </div>
         </div>
     }
+    @if (TempData["BandRemovalConfirmationMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+            <div class="container">
+                @TempData["BandRemovalConfirmationMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    }
+    @if (TempData["ShowRemovalConfirmationMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+            <div class="container">
+                @TempData["ShowRemovalConfirmationMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    }
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

@@ -103,8 +103,8 @@ namespace ShowScheduler.Models
             if (showValidationResult == "Passed" && ModelState.IsValid)
             {
                 _context.Add(show);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();                
+                return RedirectToAction("Info", "Shows", new { id = show.ID });
             }
             return View("Create", show);
         }
@@ -142,12 +142,12 @@ namespace ShowScheduler.Models
                     string showValidationResult = ShowValidation(show);
                     if (showValidationResult == "VenueConflictError")
                     {
-                        TempData["VenueConflictErrorMessage"] = "The new show's Venue and Date can't be the same as another show already scheduled.";
+                        TempData["VenueConflictErrorMessage"] = "The show's Venue and Date can't be the same as another show already scheduled.";
                         return RedirectToAction("Edit", "Shows", new { id = show.ID });
                     }
                     else if (showValidationResult == "ShowConflictError")
                     {
-                        TempData["ShowConflictErrorMessage"] = "The new show's Name and Date can't be the same as another show already scheduled.";
+                        TempData["ShowConflictErrorMessage"] = "The show's Name and Date can't be the same as another show already scheduled.";
                         return RedirectToAction("Edit", "Shows", new { id = show.ID });
                     }
                     else
@@ -167,7 +167,7 @@ namespace ShowScheduler.Models
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Info", "Shows", new { id = show.ID });
             }
             return View(show);
         }
@@ -199,6 +199,7 @@ namespace ShowScheduler.Models
             var show = await _context.Show.FindAsync(id);
             _context.Show.Remove(show);
             await _context.SaveChangesAsync();
+            TempData["ShowRemovalConfirmationMessage"] = "The show was removed successfully.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -207,11 +208,13 @@ namespace ShowScheduler.Models
             return _context.Show.Any(e => e.ID == id);
         }
 
-        // Check if a new Show's Venue and Date are in conflict with any other Shows already scheduled.
+        // This method checks if a new Show's Venue and Date, or ShowName and Date, are in conflict with
+        // any other Shows already scheduled.        
         private string ShowValidation(Show show)
         {
             string validationResult; // To hold the result of the Show's Venue and Date validation
-            var showQuery = _context.Show.AsNoTracking(); // To hold all the Shows currently scheduled 
+            var showQuery = _context.Show.AsNoTracking(); // To hold all the Shows currently scheduled
+                                                          
             foreach (Show currentShow in showQuery)
             {
                 // To hold the result of the comparison between the new Show's Venue and all other Shows
