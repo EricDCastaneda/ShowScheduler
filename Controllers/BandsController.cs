@@ -45,7 +45,7 @@ namespace ShowScheduler.Models
                 bands = bands.Where(s => s.BandName.Contains(searchString)); // End search box logic
             }
 
-            int pageSize = 6;
+            int pageSize = 6; // Set max number of Bands shown on each page
 
             // List all Bands from A-Z and include corresponding Show information specified in the Index View.
             return View(await PaginatedList<Band>.CreateAsync(bands.OrderBy(s => s.BandName)

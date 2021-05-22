@@ -44,14 +44,14 @@ namespace ShowScheduler.Models
                 shows = shows.Where(s => s.ShowName.Contains(searchString)); // End search box logic
             }
 
-            int pageSize = 6;
+            int pageSize = 6; // Set max number of Shows shown on each page
+
             return View(await PaginatedList<Show>.CreateAsync(shows.OrderByDescending(show => show.Date)
                                                                    .Include(
                                                                        show => show.Bands
                                                                            .OrderByDescending(band => band.StartTime)
                                                                            .Take(1)) // Display headlining Band with each Show
-                                                                   .AsNoTracking(), pageNumber ?? 1, pageSize));
-            
+                                                                   .AsNoTracking(), pageNumber ?? 1, pageSize));            
         }        
 
         // GET: Shows/Info/5
@@ -65,7 +65,7 @@ namespace ShowScheduler.Models
             }
 
             var show = await _context.Show
-                .Include(t => t.Bands.OrderByDescending(c => c.StartTime))
+                .Include(t => t.Bands.OrderByDescending(c => c.StartTime)) // Display all Bands playing in the Show
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
 
