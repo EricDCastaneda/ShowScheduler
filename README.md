@@ -22,7 +22,7 @@ Register an account and then click Shows->Add a Show. After you enter all the de
   - The code used in this repo uses my API key stored in a secrets.json file.
 
 ## Screenshots
-https://github.com/EricDCastaneda/ShowScheduler/blob/master/screenshots/AppPic1.jpg
-https://github.com/EricDCastaneda/ShowScheduler/blob/master/screenshots/AppPic2.jpg
-https://github.com/EricDCastaneda/ShowScheduler/blob/master/screenshots/AppPic3.jpg
-https://github.com/EricDCastaneda/ShowScheduler/blob/master/screenshots/AppPic4.jpg
+![alt text](https://github.com/EricDCastaneda/ShowScheduler/blob/master/screenshots/AppPic1.jpg)
+![alt text](https://github.com/EricDCastaneda/ShowScheduler/blob/master/screenshots/AppPic2.jpg)
+![alt text](https://github.com/EricDCastaneda/ShowScheduler/blob/master/screenshots/AppPic3.jpg)
+![alt text](https://github.com/EricDCastaneda/ShowScheduler/blob/master/screenshots/AppPic4.jpg)
