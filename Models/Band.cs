@@ -17,12 +17,12 @@ namespace ShowScheduler.Models
         public string BandName { get; set; }
 
         [DataType(DataType.Time)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:hh\\:mm tt}")]
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:hh\\:mm tt}")]
         [Display(Name = "Start Time")]
         public DateTime StartTime { get; set; }
 
         [DataType(DataType.Time)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:hh\\:mm tt}")]
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:hh\\:mm tt}")]
         [Display(Name = "End Time")]
         public DateTime EndTime { get; set; }
         public Show Show { get; set; }

@@ -9,7 +9,7 @@ namespace ShowScheduler.Models
         public int ID { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = false)]        
         public DateTime Date { get; set; }
 
         [Required]
