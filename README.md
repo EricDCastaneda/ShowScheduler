@@ -1,5 +1,5 @@
 # ShowScheduler 
-ShowScheduler is a web app that lets users schedule a show at a specific venue and add bands to each show with individually assigned time slots. There is also a page that allows users to check the current weather in Dallas,TX.   
+ShowScheduler is a web app that lets users schedule a show at a specific venue and add bands to each show with individually assigned time slots. There is also a page that allows users to check the current weather in Dallas,TX using the OpenWeather API. Click the following link to see the app: https://showschedulerapp.azurewebsites.net/.   
 
 ## How to use ShowScheduler
 Register an account and then click Shows->Add a Show. After you enter all the details and click Add, you will be taken to that Show’s Info page. Then you can click Add a Band and enter the Band’s details along with the Start Time and End Time for their set. You can add multiple bands to each show if their set times don’t overlap. Each Show and Band can be edited. You can see all shows by clicking on Shows or you can see all bands from all shows by clicking on Bands.To see the current weather in Dallas, TX, click Weather.  
